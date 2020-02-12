@@ -1,0 +1,13 @@
+name = "MiniQhull"
+uuid = "978d7f02-9e05-4691-894f-ae31a51d76ca"
+authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@cimne.upc.edu>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
