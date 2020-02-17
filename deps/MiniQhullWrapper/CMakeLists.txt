@@ -14,6 +14,7 @@ SET(CMAKE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 SET(SRC_PATH ${CMAKE_SOURCE_DIR}/src)
 SET(CMAKE_MODULE_PATH "${CMAKE_PATH}/Modules")
 SET(LIB_PATH ${SRC_PATH}/lib)
+SET(INCLUDE_PATH ${SRC_PATH}/include)
 SET(TESTS_PATH ${SRC_PATH}/tests)
 
 #################################################################
@@ -29,7 +30,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${ROOT_OUTPUT_PATH}/bin)
 #################################################################
 
 FIND_PACKAGE(Qhull REQUIRED)
-INCLUDE_DIRECTORIES(${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhullcpp_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${INCLUDE_PATH} ${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhullcpp_INCLUDE_DIR})
 
 #################################################################
 # FLAGS depend on the compiler and the build type
