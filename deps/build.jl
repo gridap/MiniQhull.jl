@@ -3,7 +3,7 @@ using Libdl
 
 QHULL_WRAPPER_FOUND    = true
 
-QHULL_WRAPPER_SOURCES  = joinpath(@__DIR__, "deps", "MiniQhullWrapper")
+QHULL_WRAPPER_SOURCES  = joinpath(@__DIR__, "MiniQhullWrapper")
 QHULL_WRAPPER_BUILD    = joinpath(QHULL_WRAPPER_SOURCES, "build")
 QHULL_WRAPPER_LIB_DIR  = joinpath(QHULL_WRAPPER_BUILD,"lib")
 QHULL_WRAPPER_LIB_NAME = nothing
@@ -26,12 +26,18 @@ if isdir(QHULL_WRAPPER_SOURCES)
     if configure.exitcode != 0
         @error "MiniQhullWrapper configure step fail with code: $(configure.exitcode)"
     end
-    # Configure MiniQhullWrapper cmake project
+    # Build MiniQhullWrapper cmake project
     build  = run(`$cmake --build $QHULL_WRAPPER_BUILD`)
     if build.exitcode != 0
         @error "MiniQhullWrapper build step fail with code: $(build.exitcode)"
     end
+    # Test MiniQhullWrapper cmake project
+    test  = run(`$cmake --build $QHULL_WRAPPER_BUILD --target test`)
+    if test.exitcode != 0
+        @error "MiniQhullWrapper test step fail with code: $(build.exitcode)"
+    end
 else
+    @warn "MiniQhullWrapper root directory not found at: $QHULL_WRAPPER_SOURCES"
     QHULL_WRAPPER_FOUND=false
     QHULL_WRAPPER_SOURCES = ""
 end
