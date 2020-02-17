@@ -39,24 +39,11 @@ find_path(
     NAMES libqhullcpp/Qhull.h
     PATHS "${QHULL_ROOT_DIR}")
 foreach(_qh_lib qhull qhull_r qhullstatic qhullstatic_r qhullcpp)
-message("${_qh_lib} lib${_qh_lib}")
     find_library(
         QHULL_${_qh_lib}_LIBRARY
         NAMES ${_qh_lib} lib${_qh_lib}
         PATHS "${QHULL_ROOT_DIR}")
 endforeach()
-
-message("
-    QHULL_ROOT_DIR: ${QHULL_ROOT_DIR}
-    QHULL_qhull_INCLUDE_DIR: ${QHULL_qhull_INCLUDE_DIR}
-    QHULL_qhull_LIBRARY: ${QHULL_qhull_LIBRARY}
-    QHULL_qhull_r_INCLUDE_DIR: ${QHULL_qhull_r_INCLUDE_DIR}
-    QHULL_qhull_r_LIBRARY: ${QHULL_qhull_r_LIBRARY}
-    QHULL_qhullcpp_INCLUDE_DIR: ${QHULL_qhullcpp_INCLUDE_DIR}
-    QHULL_qhullcpp_LIBRARY: ${QHULL_qhullcpp_LIBRARY}
-    QHULL_qhullstatic_LIBRARY: ${QHULL_qhullstatic_LIBRARY}
-    QHULL_qhullstatic_r_LIBRARY: ${QHULL_qhullstatic_r_LIBRARY}
-")
 
 mark_as_advanced(
     QHULL_qhull_INCLUDE_DIR
