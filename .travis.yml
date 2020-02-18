@@ -11,7 +11,7 @@ addons:
   apt:
     update: true
     packages:
-    - libqhull7
+    - libqhull-r7
     - libqhull-dev
 notifications:
   email:
