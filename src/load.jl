@@ -6,6 +6,7 @@ end
 
 include(deps_jl)
 
+const new_qhull_handler_ptr         = Ref{Ptr}()
 const delaunay_init_and_compute_ptr = Ref{Ptr}()
 const delaunay_fill_cells_ptr       = Ref{Ptr}()
 const delaunay_free_ptr             = Ref{Ptr}()
@@ -16,7 +17,7 @@ function __init__()
         flags = Libdl.RTLD_LAZY | Libdl.RTLD_DEEPBIND | Libdl.RTLD_GLOBAL
         QHULL_WRAPPER = Libdl.dlopen(QHULL_WRAPPER_LIB_PATH, flags)
 
-        # Initialization / Finalization
+        MiniQhull.new_qhull_handler_ptr[]         = Libdl.dlsym(QHULL_WRAPPER,:new_qhull_handler)
         MiniQhull.delaunay_init_and_compute_ptr[] = Libdl.dlsym(QHULL_WRAPPER,:delaunay_init_and_compute)
         MiniQhull.delaunay_fill_cells_ptr[]       = Libdl.dlsym(QHULL_WRAPPER,:delaunay_fill_cells)
         MiniQhull.delaunay_free_ptr[]             = Libdl.dlsym(QHULL_WRAPPER,:delaunay_free)

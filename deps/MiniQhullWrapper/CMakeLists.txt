@@ -30,7 +30,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${ROOT_OUTPUT_PATH}/bin)
 #################################################################
 
 FIND_PACKAGE(Qhull REQUIRED)
-INCLUDE_DIRECTORIES(${INCLUDE_PATH} ${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhull_INCLUDE_DIR} ${QHULL_qhullcpp_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${INCLUDE_PATH} ${QHULL_qhull_r_INCLUDE_DIR})
 
 #################################################################
 # FLAGS depend on the compiler and the build type
