@@ -1,7 +1,7 @@
 deps_jl = joinpath(@__DIR__, "..", "deps", "deps.jl")
 
 if !isfile(deps_jl)
-  error("Package GridapEmbedded not installed properly.")
+  error("Package MiniQhull not installed properly.")
 end
 
 include(deps_jl)

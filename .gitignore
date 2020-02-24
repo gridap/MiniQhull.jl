@@ -3,4 +3,6 @@
 *.jl.mem
 .DS_Store
 /dev/
+deps/build.log
+deps/deps.jl
 deps/MiniQhullWrapper/build/
