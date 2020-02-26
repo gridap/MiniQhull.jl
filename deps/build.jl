@@ -6,8 +6,8 @@ QHULL_WRAPPER_FOUND    = true
 QHULL_WRAPPER_SOURCES  = joinpath(@__DIR__, "MiniQhullWrapper")
 QHULL_WRAPPER_BUILD    = joinpath(QHULL_WRAPPER_SOURCES, "build")
 QHULL_WRAPPER_LIB_DIR  = joinpath(QHULL_WRAPPER_BUILD,"lib")
-QHULL_WRAPPER_LIB_NAME = nothing
 
+QHULL_WRAPPER_LIB_NAME    = ""
 QHULL_WRAPPER_LIB_PATH    = ""
 QHULL_WRAPPER_LIB_NAMES   = ["libMiniQhullWrapper.$(Libdl.dlext)"]
 
@@ -22,46 +22,56 @@ if isdir(QHULL_WRAPPER_SOURCES)
     mkdir(QHULL_WRAPPER_BUILD)
 
     # Configure MiniQhullWrapper cmake project
-    configure  = run(`$cmake -B $QHULL_WRAPPER_BUILD -S $QHULL_WRAPPER_SOURCES`)
-    if configure.exitcode != 0
-        @error "MiniQhullWrapper configure step fail with code: $(configure.exitcode)"
-    end
-    # Build MiniQhullWrapper cmake project
-    build  = run(`$cmake --build $QHULL_WRAPPER_BUILD`)
-    if build.exitcode != 0
-        @error "MiniQhullWrapper build step fail with code: $(build.exitcode)"
-    end
-    # Test MiniQhullWrapper cmake project
-    test  = run(`$cmake --build $QHULL_WRAPPER_BUILD --target test`)
-    if test.exitcode != 0
-        @error "MiniQhullWrapper test step fail with code: $(build.exitcode)"
+    try
+        configure  = run(`$cmake -B $QHULL_WRAPPER_BUILD -S $QHULL_WRAPPER_SOURCES`)
+        if configure.exitcode != 0
+            @warn "MiniQhullWrapper configure step fail with code: $(configure.exitcode)"
+            QHULL_WRAPPER_FOUND=false
+        else
+            # Build MiniQhullWrapper cmake project
+            build  = run(`$cmake --build $QHULL_WRAPPER_BUILD`)
+            if build.exitcode != 0
+                @warn "MiniQhullWrapper build step fail with code: $(build.exitcode)"
+                QHULL_WRAPPER_FOUND=false
+            else
+                # Test MiniQhullWrapper cmake project
+                test  = run(`$cmake --build $QHULL_WRAPPER_BUILD --target test`)
+                if test.exitcode != 0
+                    @warn "MiniQhullWrapper test step fail with code: $(build.exitcode)"
+                    QHULL_WRAPPER_FOUND=false
+                end
+            end
+        end
+    catch e
+        @warn "You should have entered a numeric value"
+        QHULL_WRAPPER_FOUND=false
     end
 else
     @warn "MiniQhullWrapper root directory not found at: $QHULL_WRAPPER_SOURCES"
     QHULL_WRAPPER_FOUND=false
-    QHULL_WRAPPER_SOURCES = ""
 end
 
-# Check QHULL_LIB_DIR (.../lib directory) exists
-if isdir(QHULL_WRAPPER_LIB_DIR)
-    @info "MiniQhullWrapper lib directory found at: $QHULL_WRAPPER_LIB_DIR"
-else
-    QHULL_WRAPPER_LIB_DIR = ""
-    @warn "MiniQhullWrapper lib directory not found: $QHULL_WRAPPER_LIB_DIR"
-end
+if QHULL_WRAPPER_FOUND
+    # Check QHULL_LIB_DIR (.../lib directory) exists
+    if isdir(QHULL_WRAPPER_LIB_DIR)
+        @info "MiniQhullWrapper lib directory found at: $QHULL_WRAPPER_LIB_DIR"
+    else
+        QHULL_WRAPPER_LIB_DIR = ""
+        @warn "MiniQhullWrapper lib directory not found: $QHULL_WRAPPER_LIB_DIR"
+    end
 
-if (QHULL_WRAPPER_LIB_NAME==nothing)
-    QHULL_WRAPPER_LIB_NAME=Libdl.find_library(QHULL_WRAPPER_LIB_NAMES, [QHULL_WRAPPER_LIB_DIR])
-end
+    if isempty(QHULL_WRAPPER_LIB_NAME)
+        QHULL_WRAPPER_LIB_NAME=Libdl.find_library(QHULL_WRAPPER_LIB_NAMES, [QHULL_WRAPPER_LIB_DIR])
+    end
 
-if isempty(QHULL_WRAPPER_LIB_NAME)
-    QHULL_WRAPPER_FOUND = false
-    @warn "MiniQhullWrapper library not found: $QHULL_WRAPPER_LIB_NAMES"
-else
-    QHULL_WRAPPER_LIB_PATH=Libdl.dlpath(QHULL_WRAPPER_LIB_NAME)
-    @info "MiniQhullWrapper library found: $QHULL_WRAPPER_LIB_NAMES"
+    if isempty(QHULL_WRAPPER_LIB_NAME)
+        @warn "MiniQhullWrapper library not found: $QHULL_WRAPPER_LIB_NAMES"
+        QHULL_WRAPPER_FOUND = false
+    else
+        QHULL_WRAPPER_LIB_PATH=Libdl.dlpath(QHULL_WRAPPER_LIB_NAME)
+        @info "MiniQhullWrapper library found: $QHULL_WRAPPER_LIB_NAMES"
+    end
 end
-
 
 
 # Write QHULL configuration to deps.jl file
