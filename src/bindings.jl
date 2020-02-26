@@ -6,7 +6,7 @@ function new_qhull_handler()
 end
 
 # int delaunay_init_and_compute( int dim, int numpoints, coordT *points, int* numcells);
-function delaunay_init_and_compute(qh::Ptr{Cvoid}, dim::Int32, numpoints::Int32, points::Vector{Float64}, numcells::Ref{Int32})
+function delaunay_init_and_compute(qh::Ptr{Cvoid}, dim::Int32, numpoints::Int32, points::Array{Float64}, numcells::Ref{Int32})
     @check_if_loaded
     ccall(delaunay_init_and_compute_ptr[], 
         Cint, (
@@ -26,7 +26,7 @@ end
 
 
 # int delaunay_fill_cells(int dim, int num_cells, int *cells);
-function delaunay_fill_cells(qh::Ptr{Cvoid}, dim::Int32, numcells::Int32, cells::Vector{Int32})
+function delaunay_fill_cells(qh::Ptr{Cvoid}, dim::Int32, numcells::Int32, cells::Array{Int32})
     @check_if_loaded
     ccall(delaunay_fill_cells_ptr[], 
         Cint, (
