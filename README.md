@@ -5,13 +5,43 @@
 
 [MiniQhull](https://github.com/gridap/MiniQhull.jl) ([Qhull](http://www.qhull.org/)-based Delaunay triangulation).
 
-## Basic Usage
+## Documentation
+
+`MiniQhull` julia package provides a single function: `delaunay`.
+
+There are two available interfaces for `MiniQhull.delaunay` functions:
+
+### Coordinates vector
 
 ```julia
-    dim          = Int32(2)
-    numpoints    = Int32(4)
-    points       = Vector{Float64}([0,0,0,1,1,0,1,1])
-    connectivity = delaunay(dim, numpoints, points)
+delaunay(dim::Integer, numpoints::Integer, points::Vector) 
+```
+vector size must agree with `dim*numpoints`.
+
+### Coordinates matrix
+
+```
+delaunay(points::Matrix) 
+```
+Matrix points must be in row mayor order (C style).
+
+
+## Usage
+
+Delaunay function accepts both vector and matrix data type to define input coordinates.
+
+Coordinates vector size must agree with `dim*numpoints`.
+```julia
+    dim          = 2
+    numpoints    = 4
+    coordinates  = [0,0,0,1,1,0,1,1]
+    connectivity = delaunay(dim, numpoints, coordinates)
+```
+
+Coordinates matrix must be in row mayor order (C style).
+```julia
+    coordinates  = [0 0 1 1; 0 1 0 1]
+    connectivity = delaunay(coordinates)
 ```
 
 ## Installation
@@ -40,16 +70,22 @@ julia> using MiniQhull
 
 `MiniQhull` also requires any C compiler installed on the system.
 
+#### Qhull installation
 
-#### Basic Qhull installation on Debian-based systems
+##### From Sources
+
+Custom installation of `Qhull` can be performed as described in the official [Qhull installation instructions](http://www.qhull.org/README.txt). 
+You can find the latest source code in the oficial [Qhull download section](http://www.qhull.org/download/).
+
+##### Debian-based installation from package manager
 
 Reentrant `Qhull` can be obtained from the default repositories of your Debian-based OS by means of `apt` tool.
 
 Basic reentrant `Qhull` installation in order to use it from `MiniQhull` julia package is as follows:
 
 ```
-$ sudo apt-get update
-$ sudo apt-get libqhull-r7 libqhull-dev
+$ sudo apt-get install update
+$ sudo apt-get install libqhull-r7 libqhull-dev
 ```
 
 If you need to install a C compiler, it can be also obtained by means of `apt` tool:
