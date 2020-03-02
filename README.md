@@ -27,22 +27,29 @@ delaunay(points::Matrix) -> Matrix{Int32}
 with `size(matrix) == (dim,numpoints)`.
 
 
-## Usage
+## Examples
 
-Delaunay function accepts both vector and matrix data type to define input coordinates.
-
-Coordinates vector size must agree with `dim*numpoints`.
 ```julia
-    dim          = 2
-    numpoints    = 4
-    coordinates  = [0,0,0,1,1,0,1,1]
-    connectivity = delaunay(dim, numpoints, coordinates)
+dim          = 2
+numpoints    = 4
+coordinates  = [0,0,0,1,1,0,1,1]
+connectivity = delaunay(dim, numpoints, coordinates)
+# output
+3×2 Array{Int32,2}:
+ 4  4
+ 2  3
+ 1  1
 ```
 
 Coordinates matrix must be in row mayor order (C style).
 ```julia
-    coordinates  = [0 0 1 1; 0 1 0 1]
-    connectivity = delaunay(coordinates)
+coordinates  = [0 0 1 1; 0 1 0 1]
+connectivity = delaunay(coordinates)
+# output
+3×2 Array{Int32,2}:
+ 4  4
+ 2  3
+ 1  1
 ```
 
 ## Installation
