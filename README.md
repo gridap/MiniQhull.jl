@@ -14,16 +14,17 @@ There are two available interfaces for `MiniQhull.delaunay` functions:
 ### Coordinates vector
 
 ```julia
-delaunay(dim::Integer, numpoints::Integer, points::Vector) 
+delaunay(dim::Integer, numpoints::Integer, points::Vector) -> Matrix{Int32}
 ```
-vector size must agree with `dim*numpoints`.
+vector length must agree with `dim*numpoints` and points must be in "component major order", i.e., components are consequitive within the vector. The resulting matrix has shape `(dim+1,nsimplices)`, where `nsimplices` is the number of
+simplices in the computed delaunay triangulation.
 
 ### Coordinates matrix
 
+```julia
+delaunay(points::Matrix) -> Matrix{Int32}
 ```
-delaunay(points::Matrix) 
-```
-Matrix points must be in row mayor order (C style).
+with `size(matrix) == (dim,numpoints)`.
 
 
 ## Usage
