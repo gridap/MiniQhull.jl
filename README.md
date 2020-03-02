@@ -30,6 +30,7 @@ with `size(matrix) == (dim,numpoints)`.
 ## Examples
 
 ```julia
+using MiniQhull
 dim          = 2
 numpoints    = 4
 coordinates  = [0,0,0,1,1,0,1,1]
@@ -41,8 +42,8 @@ connectivity = delaunay(dim, numpoints, coordinates)
  1  1
 ```
 
-Coordinates matrix must be in row mayor order (C style).
 ```julia
+using MiniQhull
 coordinates  = [0 0 1 1; 0 1 0 1]
 connectivity = delaunay(coordinates)
 # output
