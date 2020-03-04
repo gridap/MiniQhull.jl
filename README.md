@@ -9,15 +9,11 @@
 
 The `MiniQhull` julia package provides a single function `delaunay` overloaded with 2 methods:
 
-### Coordinates vector
-
 ```julia
 delaunay(dim::Integer, numpoints::Integer, points::Vector) -> Matrix{Int32}
 ```
 Compute the Delaunay triangulation of a cloud of points in an arbitrary dimension `dim`. The length of vector `points` must be `dim*numpoints`. Vector `points` holds data in "component major order", i.e., components are consequitive within the vector. The returned matrix has shape `(dim+1, nsimplices)`, where `nsimplices` is the number of
-simplices in the computed delaunay triangulation.
-
-### Coordinates matrix
+simplices in the computed Delaunay triangulation.
 
 ```julia
 delaunay(points::Matrix) -> Matrix{Int32}
@@ -53,28 +49,22 @@ connectivity = delaunay(coordinates)
 
 ## Installation
 
-**MiniQhull** is installed when you add and use it into another project.
-
-Please, ensure that your system fulfill the requirements (see below).
-
-To include into your project form Julia REPL, use the following commands:
+`MiniQhull` is a registered Julia package. If your system fulfills all the requirements (see below), `MiniQhull` can be installed using the command:
 
 ```
 pkg> add MiniQhull
-julia> using MiniQhull
 ```
 
 If, for any reason, you need to manually build the project, write down the following commands in the Julia REPL:
 ```
 pkg> add MiniQhull
 pkg> build MiniQhull
-julia> using MiniQhull
 ```
 
 ### Requirements
 
 The `MiniQhull` package requires the [Qhull](http://www.qhull.org/) reentrant library installed in your system. 
-It can be installed in any path on your local machine as long as you export the environment variable `QHULL_ROOT_DIR` containing the installation directory. If this environment variable is not set, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
+It can be installed in any path on your local machine as long as you export the environment variable `QHULL_ROOT_DIR` pointing to the installation directory. If this environment variable is not set, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
 
 `MiniQhull` also requires any C compiler installed on the system.
 
