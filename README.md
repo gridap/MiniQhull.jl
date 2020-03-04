@@ -97,6 +97,10 @@ In order to use `MiniQhull` in continuous integration jobs, you must ensure that
 If your CI process is based on `Travis-CI` you can add the following block at the beginning of your `.travis.yml` file:
 
 ```
+os:
+  - linux
+dist:
+  - bionic
 addons:
   apt:
     update: true
