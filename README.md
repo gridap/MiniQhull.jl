@@ -7,16 +7,14 @@
 
 ## Documentation
 
-`MiniQhull` julia package provides a single function: `delaunay`.
-
-There are two available interfaces for `MiniQhull.delaunay` functions:
+The `MiniQhull` julia package provides a single function `delaunay` overloaded with 2 methods:
 
 ### Coordinates vector
 
 ```julia
 delaunay(dim::Integer, numpoints::Integer, points::Vector) -> Matrix{Int32}
 ```
-vector length must agree with `dim*numpoints` and points must be in "component major order", i.e., components are consequitive within the vector. The resulting matrix has shape `(dim+1,nsimplices)`, where `nsimplices` is the number of
+Compute the Delaunay triangulation of a cloud of points in an arbitrary dimension `dim`. The length of vector `points` must be `dim*numpoints`. Vector `points` holds data in "component major order", i.e., components are consequitive within the vector. The returned matrix has shape `(dim+1, nsimplices)`, where `nsimplices` is the number of
 simplices in the computed delaunay triangulation.
 
 ### Coordinates matrix
@@ -24,7 +22,7 @@ simplices in the computed delaunay triangulation.
 ```julia
 delaunay(points::Matrix) -> Matrix{Int32}
 ```
-with `size(matrix) == (dim,numpoints)`.
+In this variant, the cloud of points is specified by a matrix with `size(matrix) == (dim, numpoints)`.
 
 
 ## Examples
@@ -55,9 +53,9 @@ connectivity = delaunay(coordinates)
 
 ## Installation
 
-**MiniQhull** itself is installed when you add and use it into another project.
+**MiniQhull** is installed when you add and use it into another project.
 
-Please, ensure that your system fulfill the requirements.
+Please, ensure that your system fulfill the requirements (see below).
 
 To include into your project form Julia REPL, use the following commands:
 
@@ -66,7 +64,7 @@ pkg> add MiniQhull
 julia> using MiniQhull
 ```
 
-If, for any reason, you need to manually build the project (e.g., you added the project with the wrong environment resulting a build that fails, you have fixed the environment and want to re-build the project), write down the following commands in Julia REPL:
+If, for any reason, you need to manually build the project, write down the following commands in the Julia REPL:
 ```
 pkg> add MiniQhull
 pkg> build MiniQhull
@@ -75,7 +73,8 @@ julia> using MiniQhull
 
 ### Requirements
 
-`MiniQhull` julia package requires [Qhull](http://www.qhull.org/) reentrant library installed in a system path. Reentrant `Qhull` library can be installed in any path on your local machine. In order to succesfull describe your custom installation to be located by `MiniQhull`, you must export `QHULL_ROOT_DIR` environment variable. If this environment variables are not available, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
+The `MiniQhull` package requires the [Qhull](http://www.qhull.org/) reentrant library installed in your system. 
+It can be installed in any path on your local machine as long as you export the environment variable `QHULL_ROOT_DIR` containing the installation directory. If this environment variable is not set, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
 
 `MiniQhull` also requires any C compiler installed on the system.
 
@@ -88,9 +87,7 @@ You can find the latest source code in the oficial [Qhull download section](http
 
 ##### Debian-based installation from package manager
 
-Reentrant `Qhull` can be obtained from the default repositories of your Debian-based OS by means of `apt` tool.
-
-Basic reentrant `Qhull` installation in order to use it from `MiniQhull` julia package is as follows:
+The reentrant `Qhull` library can be installed with `apt` in recent Debian-based linux distributions as follows:
 
 ```
 $ sudo apt-get install update
@@ -105,7 +102,7 @@ $ sudo apt-get gcc
 
 ## Continuous integration
 
-In order to take advantage of `MiniQhull` julia package during continuous integration, you must ensure that the requirements are fullfilled in the CI environment.
+In order to use `MiniQhull` in continuous integration jobs, you must ensure that its installation requirements are fullfilled in the CI environment.
 
 If your CI process is based on `Travis-CI` you can add the following block at the beginning of your `.travis.yml` file:
 
