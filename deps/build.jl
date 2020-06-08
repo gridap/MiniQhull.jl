@@ -14,10 +14,9 @@ QHULL_WRAPPER_LIB_NAMES   = ["libMiniQhullWrapper.$(Libdl.dlext)"]
 QHULL_ROOT_DIR = "/usr"
 if haskey(ENV,"QHULL_ROOT_DIR") 
     QHULL_ROOT_DIR = ENV["QHULL_ROOT_DIR"]
-else
-    if VERSION >= v"1.3"
-        using Qhull_jll
-        QHULL_ROOT_DIR = Qhull_jll.artifact_dir
+elseif VERSION >= v"1.3"
+    using Qhull_jll
+    QHULL_ROOT_DIR = Qhull_jll.artifact_dir
 end
 
 
