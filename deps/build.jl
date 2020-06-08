@@ -11,6 +11,14 @@ QHULL_WRAPPER_LIB_NAME    = ""
 QHULL_WRAPPER_LIB_PATH    = ""
 QHULL_WRAPPER_LIB_NAMES   = ["libMiniQhullWrapper.$(Libdl.dlext)"]
 
+if !haskey(ENV,"QHULL_ROOT_DIR") && VERSION >= v"1.3"
+    using Qhull_jll
+    QHULL_ROOT_DIR = Qhull_jll.artifact_dir
+else 
+    QHULL_ROOT_DIR = ENV["QHULL_ROOT_DIR"]
+end
+
+
 # Check QHULL_WRAPPER_SOURCES dir exists
 if isdir(QHULL_WRAPPER_SOURCES)
     @info "MiniQhullWrapper root directory at: $QHULL_WRAPPER_SOURCES"
@@ -23,7 +31,7 @@ if isdir(QHULL_WRAPPER_SOURCES)
 
     # Configure MiniQhullWrapper cmake project
     try
-        configure  = run(`$cmake -B $QHULL_WRAPPER_BUILD -S $QHULL_WRAPPER_SOURCES`)
+        configure  = run(`$cmake -DQHULL_ROOT_DIR=$QHULL_ROOT_DIR -B $QHULL_WRAPPER_BUILD -S $QHULL_WRAPPER_SOURCES`)
         if configure.exitcode != 0
             @warn "MiniQhullWrapper configure step fail with code: $(configure.exitcode)"
             QHULL_WRAPPER_FOUND=false
