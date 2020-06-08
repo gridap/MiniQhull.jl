@@ -11,6 +11,7 @@ Qhull_jll = "784f63db-0788-585a-bace-daefebcd302b"
 [compat]
 CMake = "1.2.0"
 julia = "1"
+Qhull_jll = "v2019.1.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
