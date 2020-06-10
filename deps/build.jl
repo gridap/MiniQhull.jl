@@ -35,29 +35,29 @@ if isdir(QHULL_WRAPPER_SOURCES)
         configure  = run(`$cmake -DQHULL_ROOT_DIR=$QHULL_ROOT_DIR -B $QHULL_WRAPPER_BUILD -S $QHULL_WRAPPER_SOURCES`)
         if configure.exitcode != 0
             @warn "MiniQhullWrapper configure step fail with code: $(configure.exitcode)"
-            QHULL_WRAPPER_FOUND=false
+            global QHULL_WRAPPER_FOUND=false
         else
             # Build MiniQhullWrapper cmake project
             build  = run(`$cmake --build $QHULL_WRAPPER_BUILD`)
             if build.exitcode != 0
                 @warn "MiniQhullWrapper build step fail with code: $(build.exitcode)"
-                QHULL_WRAPPER_FOUND=false
+                global QHULL_WRAPPER_FOUND=false
             else
                 # Test MiniQhullWrapper cmake project
                 test  = run(`$cmake --build $QHULL_WRAPPER_BUILD --target test`)
                 if test.exitcode != 0
                     @warn "MiniQhullWrapper test step fail with code: $(build.exitcode)"
-                    QHULL_WRAPPER_FOUND=false
+                    global QHULL_WRAPPER_FOUND=false
                 end
             end
         end
     catch e
-        @warn "You should have entered a numeric value"
-        QHULL_WRAPPER_FOUND=false
+        @warn "Something wrong has happened while building MiniQhullWrapper"
+        global QHULL_WRAPPER_FOUND=false
     end
 else
     @warn "MiniQhullWrapper root directory not found at: $QHULL_WRAPPER_SOURCES"
-    QHULL_WRAPPER_FOUND=false
+    global QHULL_WRAPPER_FOUND=false
 end
 
 if QHULL_WRAPPER_FOUND
