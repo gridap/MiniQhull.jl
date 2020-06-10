@@ -64,7 +64,10 @@ pkg> build MiniQhull
 ### Requirements
 
 The `MiniQhull` package requires the [Qhull](http://www.qhull.org/) reentrant library installed in your system. 
-It can be installed in any path on your local machine as long as you export the environment variable `QHULL_ROOT_DIR` pointing to the installation directory. If this environment variable is not set, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
+
+  - By default, if `julia  >= 1.3`, it will use [`Qhull_jll` library](https://github.com/JuliaBinaryWrappers/Qhull_jll.jl) and you don't need to manually install anything.
+  - If you need to perform a custom `Qhull` installation. It can be installed in any path on your local machine as long as you export the environment variable `QHULL_ROOT_DIR` pointing to the installation directory. 
+  - If none of the previous choices are used, `MiniQhull` will try to find the library in the usual linux user library directory (`/usr/lib`).
 
 `MiniQhull` also requires any C compiler installed on the system.
 
@@ -94,7 +97,7 @@ $ sudo apt-get gcc
 
 In order to use `MiniQhull` in continuous integration jobs, you must ensure that its installation requirements are fullfilled in the CI environment.
 
-If your CI process is based on `Travis-CI` you can add the following block at the beginning of your `.travis.yml` file:
+For `julia < 1.3` jobs, if your CI process is based on `Travis-CI` you can add the following block at the beginning of your `.travis.yml` file:
 
 ```
 os:

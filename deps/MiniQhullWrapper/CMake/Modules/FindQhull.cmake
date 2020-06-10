@@ -29,20 +29,21 @@ set(QHULL_ROOT_DIR
 find_path(
     QHULL_qhull_INCLUDE_DIR
     NAMES libqhull/libqhull.h
-    PATHS "${QHULL_ROOT_DIR}")
+    PATHS "${QHULL_ROOT_DIR}" "${QHULL_ROOT_DIR}/include")
 find_path(
     QHULL_qhull_r_INCLUDE_DIR
     NAMES libqhull_r/libqhull_r.h
-    PATHS "${QHULL_ROOT_DIR}")
+    PATHS "${QHULL_ROOT_DIR}" "${QHULL_ROOT_DIR}/include")
 find_path(
     QHULL_qhullcpp_INCLUDE_DIR
     NAMES libqhullcpp/Qhull.h
-    PATHS "${QHULL_ROOT_DIR}")
+    PATHS "${QHULL_ROOT_DIR}" "${QHULL_ROOT_DIR}/include")
+
 foreach(_qh_lib qhull qhull_r qhullstatic qhullstatic_r qhullcpp)
     find_library(
         QHULL_${_qh_lib}_LIBRARY
         NAMES ${_qh_lib} lib${_qh_lib}
-        PATHS "${QHULL_ROOT_DIR}")
+        PATHS "${QHULL_ROOT_DIR}" "${QHULL_ROOT_DIR}/lib")
 endforeach()
 
 mark_as_advanced(
