@@ -1,7 +1,7 @@
 name = "MiniQhull"
 uuid = "978d7f02-9e05-4691-894f-ae31a51d76ca"
 authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@cimne.upc.edu>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CMake = "631607c0-34d2-5d66-819e-eb0f9aa2061a"
