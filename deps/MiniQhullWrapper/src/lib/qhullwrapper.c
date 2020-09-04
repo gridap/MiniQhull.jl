@@ -87,6 +87,7 @@ int delaunay_free(qhT *qh)
   /* Free memory from qhull and check that no memory is leaked */
   qh_freeqhull (qh, ! qh_ALL);
   qh_memfreeshort (qh, &curlong, &totlong);
+  free(qh);
   if (curlong || totlong) return -2;
 
   return 0;
