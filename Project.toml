@@ -1,7 +1,7 @@
 name = "MiniQhull"
 uuid = "978d7f02-9e05-4691-894f-ae31a51d76ca"
 authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@cimne.upc.edu>"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 CMake = "631607c0-34d2-5d66-819e-eb0f9aa2061a"
@@ -10,8 +10,8 @@ Qhull_jll = "784f63db-0788-585a-bace-daefebcd302b"
 
 [compat]
 CMake = "1.2.0"
-julia = "1"
 Qhull_jll = "v2019.1.0"
+julia = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
