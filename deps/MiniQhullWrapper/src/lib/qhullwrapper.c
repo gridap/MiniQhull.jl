@@ -20,6 +20,7 @@ int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, i
   boolT ismalloc = False;
   FILE *outfile;
   FILE *errfile= stderr;
+  char flagsarr[250];
   int exitcode;
   int err;
   facetT *facet;
@@ -35,9 +36,10 @@ int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, i
       else
         flags = "qhull d Qt Qbb Qc Qx";
     }
+  snprintf(flagsarr, sizeof flagsarr, "%s", flags);
 
   /* Run qhull*/
-  exitcode = qh_new_qhull(qh, dim, numpoints, points, ismalloc, flags, outfile, errfile);
+  exitcode = qh_new_qhull(qh, dim, numpoints, points, ismalloc, flagsarr, outfile, errfile);
   if (exitcode) return exitcode;
   err = fclose(outfile);
   if (err == EOF) {return -4;}
