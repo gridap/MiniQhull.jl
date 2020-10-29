@@ -14,9 +14,9 @@ int main(int argc, char *argv[]) {
     double points[] = {0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0};
 
     qh = new_qhull_handler();
-    printf("[ERROR=%d] (delaunay_init_and_compute) *qh = %p \n", error, qh );
-    error = delaunay_init_and_compute(qh, dim, numpoints, points, &numcells );
-    printf("[ERROR=%d] (delaunay_init_and_compute) numcells = %d \n", error, numcells );
+    printf("[ERROR=%d] (delaunay_init_and_compute) *qh = %p \n", error, qh);
+    error = delaunay_init_and_compute(qh, dim, numpoints, points, &numcells, NULL);
+    printf("[ERROR=%d] (delaunay_init_and_compute) numcells = %d \n", error, numcells);
     if (error != 0) exit(error);
 
     cells = (int *) malloc((dim+1)*numcells * sizeof(int));

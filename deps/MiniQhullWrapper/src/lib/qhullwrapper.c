@@ -1,3 +1,4 @@
+#include <stdio.h> 
 #include <stdlib.h> 
 #include <libqhull_r/libqhull_r.h>
 
@@ -13,13 +14,12 @@ qhT* new_qhull_handler()
   return qh;
 }
 
-int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, int* numcells )
+int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, int* numcells, const char* flags)
 {
 
   boolT ismalloc = False;
   FILE *outfile;
   FILE *errfile= stderr;
-  char flags[250];
   int exitcode;
   int err;
   facetT *facet;
@@ -28,10 +28,13 @@ int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, i
   outfile = fopen("/dev/null","w");
   if (!outfile) {return -3;}
   /*outfile= stdout;*/
-  if (dim <= 3)
-    sprintf(flags,"qhull d Qt Qbb Qc Qz");
-  else
-    sprintf(flags,"qhull d Qt Qbb Qc Qx");
+  if (!flags)
+    {
+      if (dim <= 3)
+        flags = "qhull d Qt Qbb Qc Qz";
+      else
+        flags = "qhull d Qt Qbb Qc Qx";
+    }
 
   /* Run qhull*/
   exitcode = qh_new_qhull(qh, dim, numpoints, points, ismalloc, flags, outfile, errfile);
@@ -53,7 +56,7 @@ int delaunay_init_and_compute(qhT *qh, int dim, int numpoints, coordT *points, i
   return 0;
 }
 
-int delaunay_fill_cells(qhT *qh, int dim, int num_cells, int *cells )
+int delaunay_fill_cells(qhT *qh, int dim, int num_cells, int *cells)
 {
 
   int icell = 0;
