@@ -20,6 +20,16 @@ delaunay(points::Matrix) -> Matrix{Int32}
 ```
 In this variant, the cloud of points is specified by a matrix with `size(matrix) == (dim, numpoints)`.
 
+You can override the default set of flags that Qhull uses by passing
+an additional `flags` argument:
+
+```julia
+delaunay(dim::Integer, numpoints::Integer, points::Vector, flags::AbstractString) -> Matrix{Int32}
+delaunay(points::Matrix, flags::AbstractString) -> Matrix{Int32}
+```
+The default set of flags is `qhull d Qt Qbb Qc Qz` for up to 3 dimensions, and `qhull d Qt Qbb Qc Qx` for higher dimensions. The flags you pass override the default flags, i.e. you have to pass all the flags that Qhull should use.
+
+
 
 ## Examples
 
