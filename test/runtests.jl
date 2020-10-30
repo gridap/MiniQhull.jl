@@ -14,7 +14,7 @@ if MiniQhull.QHULL_WRAPPER_LOADED[]
         c3 = delaunay([0 0 1 1; 0 1 0 1], "qhull d Qbb Qc QJ Pp")
         # QJ randomizes ("joggles") the input, so the output is not deterministic
         @test size(c3) == (3, 2)
-        c4 = delaunay([0 0 1 1; 0 1 0 1], SubString("qhull d Qt Qbb Qc Qz", 1:20))
+        c4 = delaunay([0 0 1 1; 0 1 0 1], GenericString("qhull d Qt Qbb Qc Qz"))
         @test c4 == c0
     end
 end
