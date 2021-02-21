@@ -1,6 +1,6 @@
 # MiniQhull
 
-[![CI](https://github.com/juliadynamics/TransferEntropy.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/TransferEntropy.jl/actions)
+[![CI](https://github.com/gridap/MiniQhull.jl/workflows/CI/badge.svg)](https://github.com/gridap/MiniQhull.jl/actions)
 [![Codecov](https://codecov.io/gh/gridap/MiniQhull.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/gridap/MiniQhull.jl)
 
 [MiniQhull](https://github.com/gridap/MiniQhull.jl) ([Qhull](http://www.qhull.org/)-based Delaunay triangulation).
