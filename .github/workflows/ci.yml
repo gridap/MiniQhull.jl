@@ -27,10 +27,6 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
-      - name: Install libhull-r7
-        run: sudo apt-get install libhull-r7
-      - name: Install libqhull-dev
-        run: sudo apt-get install libqhull-dev
 
       # Do tests
       - uses: actions/checkout@v2
