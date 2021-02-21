@@ -22,10 +22,18 @@ function _delaunay(dim::Int32, numpoints::Int32, points::AbstractArray{Float64},
     cells
 end
 
+function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{T}, flags::Union{Nothing,AbstractString}=nothing) where T <: Int
+    @assert numpoints*dim == length(points)
+    _delaunay(Int32(dim), Int32(numpoints), float.(points), flags)
+end
+
+# If input data are already Float64, then no conversion is needed
 function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{Float64}, flags::Union{Nothing,AbstractString}=nothing) 
     @assert numpoints*dim == length(points)
-    _delaunay(Int32(dim), Int32(numpoints), Vector{Float64}(points), flags)
+    _delaunay(Int32(dim), Int32(numpoints), points, flags)
 end
+
+
 
 function delaunay(points::Matrix,
     flags::Union{Nothing,AbstractString}=nothing)
