@@ -10,7 +10,7 @@
 The `MiniQhull` julia package provides a single function `delaunay` overloaded with 2 methods:
 
 ```julia
-delaunay(dim::Integer, numpoints::Integer, points::Vector) -> Matrix{Int32}
+delaunay(dim::Integer, numpoints::Integer, points::AbstractVector) -> Matrix{Int32}
 ```
 Compute the Delaunay triangulation of a cloud of points in an arbitrary dimension `dim`. The length of vector `points` must be `dim*numpoints`. Vector `points` holds data in "component major order", i.e., components are consequitive within the vector. The returned matrix has shape `(dim+1, nsimplices)`, where `nsimplices` is the number of
 simplices in the computed Delaunay triangulation.
@@ -24,12 +24,10 @@ You can override the default set of flags that Qhull uses by passing
 an additional `flags` argument:
 
 ```julia
-delaunay(dim::Integer, numpoints::Integer, points::Vector, flags::AbstractString) -> Matrix{Int32}
+delaunay(dim::Integer, numpoints::Integer, points::AbstractVector, flags::AbstractString) -> Matrix{Int32}
 delaunay(points::Matrix, flags::AbstractString) -> Matrix{Int32}
 ```
 The default set of flags is `qhull d Qt Qbb Qc Qz` for up to 3 dimensions, and `qhull d Qt Qbb Qc Qx` for higher dimensions. The flags you pass override the default flags, i.e. you have to pass all the flags that Qhull should use.
-
-
 
 ## Examples
 
