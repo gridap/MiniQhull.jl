@@ -19,7 +19,7 @@ jobs:
           - '1.0'
           - '1.3'
         os:
-          - [ubuntu-latest, macOS-latest]
+          - [ubuntu-latest]
         arch:
           - x64
     steps:
