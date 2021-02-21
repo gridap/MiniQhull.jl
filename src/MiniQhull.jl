@@ -7,7 +7,7 @@ export delaunay
 include("load.jl")
 include("bindings.jl")
 
-function _delaunay(dim::Int32, numpoints::Int32, points::Array{Float64}, flags::Union{Nothing,AbstractString}) 
+function _delaunay(dim::Int32, numpoints::Int32, points::AbstractArray{T}, flags::Union{Nothing,AbstractString}) where T
     numcells = Ref{Int32}()
     qh = new_qhull_handler()
     qh == C_NULL && error("Qhull handler is null")
@@ -22,8 +22,7 @@ function _delaunay(dim::Int32, numpoints::Int32, points::Array{Float64}, flags::
     cells
 end
 
-function delaunay(dim::Integer, numpoints::Integer, points::Vector,
-                  flags::Union{Nothing,AbstractString}=nothing)
+function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{T}, flags::Union{Nothing,AbstractString}=nothing) where T
     @assert numpoints*dim == size(points,1)
     _delaunay(Int32(dim), Int32(numpoints), Vector{Float64}(points), flags)
 end

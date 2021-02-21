@@ -6,7 +6,7 @@ function new_qhull_handler()
 end
 
 # int delaunay_init_and_compute( int dim, int numpoints, coordT *points, int* numcells);
-function delaunay_init_and_compute(qh::Ptr{Cvoid}, dim::Int32, numpoints::Int32, points::Array{Float64}, numcells::Ref{Int32}, flags::Union{Ptr{Nothing},AbstractString})
+function delaunay_init_and_compute(qh::Ptr{Cvoid}, dim::Int32, numpoints::Int32, points::AbstractArray{T}, numcells::Ref{Int32}, flags::Union{Ptr{Nothing},AbstractString}) where T
     @check_if_loaded
     ccall(delaunay_init_and_compute_c[], 
         Cint, (
