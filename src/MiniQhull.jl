@@ -22,7 +22,7 @@ function _delaunay(dim::Int32, numpoints::Int32, points::AbstractArray{Float64},
     cells
 end
 
-function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{T}, flags::Union{Nothing,AbstractString}=nothing) where T <: Int
+function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{T}, flags::Union{Nothing,AbstractString}=nothing) where T
     @assert numpoints*dim == length(points)
     _delaunay(Int32(dim), Int32(numpoints), float.(points), flags)
 end
