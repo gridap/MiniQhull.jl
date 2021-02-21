@@ -55,6 +55,21 @@ connectivity = delaunay(coordinates)
  1  1
 ```
 
+### Vectors of SVector
+
+You may want to use a `Vector{SVector}`, where `SVector` is from
+[StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl), to represent your
+points. If so, you can use `reinterpret` to represent the points in component major order.
+
+```julia
+using MiniQhull, StaticArrays
+dim = 5
+npts = 100
+pts = [SVector{dim, Float64}(rand(dim)) for i = 1:npts];
+flags = "qhull d Qbb Qc QJ Pp" # custom flags
+connectivity = delaunay(dim, npts, reinterpret(Float64, pts), flags)
+```
+
 ## Installation
 
 `MiniQhull` is a registered Julia package. If your system fulfills all the requirements (see below), `MiniQhull` can be installed using the command:
