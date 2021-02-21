@@ -24,7 +24,7 @@ end
 
 function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{T}, flags::Union{Nothing,AbstractString}=nothing) where T
     @assert numpoints*dim == length(points)
-    _delaunay(Int32(dim), Int32(numpoints), points, flags)
+    _delaunay(Int32(dim), Int32(numpoints), Vector{Float64}(points), flags)
 end
 
 function delaunay(points::Matrix,
