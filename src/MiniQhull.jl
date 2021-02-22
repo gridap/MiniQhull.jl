@@ -7,7 +7,7 @@ export delaunay
 include("load.jl")
 include("bindings.jl")
 
-function _delaunay(dim::Int32, numpoints::Int32, points::AbstractArray{Float64}, flags::Union{Nothing,AbstractString})
+function _delaunay(dim::Int32, numpoints::Int32, points, flags::Union{Nothing,AbstractString})
     numcells = Ref{Int32}()
     qh = new_qhull_handler()
     qh == C_NULL && error("Qhull handler is null")
@@ -34,10 +34,32 @@ function delaunay(dim::Integer, numpoints::Integer, points::AbstractVector{Float
 end
 
 
-
-function delaunay(points::Matrix,
+function delaunay(points::AbstractMatrix,
     flags::Union{Nothing,AbstractString}=nothing)
     _delaunay(Int32(size(points,1)), Int32(size(points,2)), Array{Float64}(points), flags)
 end
+
+
+get_dim(points::AbstractVector{T}) where T = length(eltype(points))
+get_dim(points::AbstractVector{NTuple{N, T}}) where {N, T} = N
+get_dim(points::AbstractVector{T}) where T <: Vector = length(points[1])
+
+# Generic fallback for when points are of some type where it is possible to get a 
+# column-major vector by calling `reinterpret(Float64, points)`. This avoids extra 
+# allocations, and is more efficient than using regular vectors. 
+# An example would be using `SVector`s or tuples as points.
+function delaunay(points::AbstractVector{T}, flags=nothing) where {T} 
+    numpoints = length(points)
+    _delaunay(Int32(get_dim(points)), Int32(numpoints), reinterpret(Float64, points), flags)
+end
+
+# It is also conceivable that a user would want to use regular vectors as points. In that 
+# case, we need to flatten the list of points and collect (allocates, and is slow).
+function delaunay(points::AbstractVector{T}, flags=nothing) where {T <: Vector}
+    numpoints = length(points)
+    _delaunay(Int32(get_dim(points)), Int32(numpoints), 
+        Base.Iterators.Flatten(points) |> collect, flags)
+end
+
 
 end # module
