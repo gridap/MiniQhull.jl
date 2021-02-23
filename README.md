@@ -7,26 +7,40 @@
 
 ## Documentation
 
-The `MiniQhull` julia package provides a single function `delaunay` overloaded with 2 methods:
+The `MiniQhull` julia package provides a single function `delaunay` overloaded with 3 methods:
 
 ```julia
 delaunay(dim::Integer, numpoints::Integer, points::AbstractVector) -> Matrix{Int32}
 ```
+
 Compute the Delaunay triangulation of a cloud of points in an arbitrary dimension `dim`. The length of vector `points` must be `dim*numpoints`. Vector `points` holds data in "component major order", i.e., components are consequitive within the vector. The returned matrix has shape `(dim+1, nsimplices)`, where `nsimplices` is the number of
 simplices in the computed Delaunay triangulation.
 
 ```julia
-delaunay(points::Matrix) -> Matrix{Int32}
+delaunay(points::AbstractMatrix) -> Matrix{Int32}
 ```
+
 In this variant, the cloud of points is specified by a matrix with `size(matrix) == (dim, numpoints)`.
+
+```julia
+delaunay(points::AbstractVector) -> Matrix{Int32}
+```
+
+In this variant, the cloud of points is specified with a vector of `dim`-element vectors or
+tuples. It is also possible to use a vector of other tuple-like types, like `SVector` from 
+[StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl).
+
+### Adjusting Qhull flags
 
 You can override the default set of flags that Qhull uses by passing
 an additional `flags` argument:
 
 ```julia
 delaunay(dim::Integer, numpoints::Integer, points::AbstractVector, flags::AbstractString) -> Matrix{Int32}
-delaunay(points::Matrix, flags::AbstractString) -> Matrix{Int32}
+delaunay(points::AbstractMatrix, flags::AbstractString) -> Matrix{Int32}
+delaunay(points::AbstractVector, flags::AbstractString) -> Matrix{Int32}
 ```
+
 The default set of flags is `qhull d Qt Qbb Qc Qz` for up to 3 dimensions, and `qhull d Qt Qbb Qc Qx` for higher dimensions. The flags you pass override the default flags, i.e. you have to pass all the flags that Qhull should use.
 
 ## Examples
@@ -55,19 +69,13 @@ connectivity = delaunay(coordinates)
  1  1
 ```
 
-### Vectors of SVector
-
-You may want to use a `Vector{SVector}`, where `SVector` is from
-[StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl), to represent your
-points. If so, you can use `reinterpret` to represent the points in component major order.
-
 ```julia
 using MiniQhull, StaticArrays
 dim = 5
-npts = 100
+npts = 500
 pts = [SVector{dim, Float64}(rand(dim)) for i = 1:npts];
 flags = "qhull d Qbb Qc QJ Pp" # custom flags
-connectivity = delaunay(dim, npts, reinterpret(Float64, pts), flags)
+connectivity = delaunay(pts, flags)
 ```
 
 ## Installation
