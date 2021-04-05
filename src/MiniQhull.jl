@@ -1,14 +1,10 @@
 module MiniQhull
 
-using Libdl
-
 export delaunay
 
 include("LibQhull.jl")
 using .LibQhull
 using .LibQhull: vertexT, setelemT
-
-include("load.jl")
 include("bindings.jl")
 
 function _delaunay(dim::Int32, numpoints::Int32, points, flags::Union{Nothing,AbstractString})

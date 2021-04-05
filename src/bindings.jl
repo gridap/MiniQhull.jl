@@ -1,16 +1,12 @@
-
 # qhT* new_qhull_handler();
 function new_qhull_handler()
-    @check_if_loaded
     qh = Ptr{qhT}(Libc.malloc(sizeof(qhT)))
-    qh_zero(qh, stderr.handle)
+    qh_zero(qh, C_NULL)
     return qh
 end
 
 # int delaunay_init_and_compute( int dim, int numpoints, coordT *points, int* numcells);
 function delaunay_init_and_compute(qh::Ptr, dim::Int32, numpoints::Int32, points, numcells::Ref{Int32}, flags::Union{Ptr{Nothing},AbstractString})
-    @check_if_loaded
-
     ismalloc = false
 
     if flags == C_NULL
@@ -21,7 +17,7 @@ function delaunay_init_and_compute(qh::Ptr, dim::Int32, numpoints::Int32, points
 
     # Run qhull
     GC.@preserve qhull_cmd begin
-        exitcode = qh_new_qhull(qh, dim, numpoints, points, ismalloc, qhull_cmd, C_NULL, stderr.handle)
+        exitcode = qh_new_qhull(qh, dim, numpoints, points, ismalloc, qhull_cmd, C_NULL, C_NULL)
     end
     exitcode != 0 && return exitcode
 
@@ -53,7 +49,6 @@ end
 
 # int delaunay_fill_cells(int dim, int num_cells, int *cells);
 function delaunay_fill_cells(qh::Ptr, dim::Int32, numcells::Int32, cells::Array{Int32})
-    @check_if_loaded
     icell = 0
     facet = unsafe_load(qh.facet_list)
     vertex = Ptr{vertexT}(C_NULL)
@@ -88,7 +83,6 @@ end
 
 #int delaunay_free()
 function delaunay_free(qh::Ptr)
-    @check_if_loaded
     curlong = Ref{Cint}(0)
     totlong = Ref{Cint}(0)
     qh_freeqhull(qh, !Bool(qh_ALL))
