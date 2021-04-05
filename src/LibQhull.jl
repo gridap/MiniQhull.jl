@@ -3,8 +3,11 @@ module LibQhull
 using Qhull_jll
 export Qhull_jll
 
-const boolT = Cuint
-export boolT
+const DBL_MAX = floatmax()
+const DBL_MIN = floatmin()
+const DBL_EPSILON = eps()
+const INT_MAX = typemax(Cint)
+const INT_MIN = typemin(Cint)
 
 
 const countT = Cint
@@ -22,7 +25,8 @@ end
 function Base.getproperty(x::setelemT, f::Symbol)
     r = Ref{setelemT}(x)
     ptr = Base.unsafe_convert(Ptr{setelemT}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
 end
 
 function Base.setproperty!(x::Ptr{setelemT}, f::Symbol, v)
@@ -32,6 +36,23 @@ end
 struct setT
     maxsize::Cint
     e::NTuple{1, setelemT}
+end
+
+function Base.getproperty(x::Ptr{setT}, f::Symbol)
+    f === :maxsize && return Ptr{Cint}(x + 0)
+    f === :e && return Ptr{NTuple{1, setelemT}}(x + 8)
+    return getfield(x, f)
+end
+
+function Base.getproperty(x::setT, f::Symbol)
+    r = Ref{setT}(x)
+    ptr = Base.unsafe_convert(Ptr{setT}, r)
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
+end
+
+function Base.setproperty!(x::Ptr{setT}, f::Symbol, v)
+    unsafe_store!(getproperty(x, f), v)
 end
 
 @enum qh_PRINT::UInt32 begin
@@ -78,7 +99,7 @@ function Base.getproperty(x::Ptr{facetT}, f::Symbol)
     f === :maxoutside && return Ptr{Cdouble}(x + 8)
     f === :offset && return Ptr{Cdouble}(x + 16)
     f === :normal && return Ptr{Ptr{Cdouble}}(x + 24)
-    f === :f && return Ptr{var"##Ctag#260"}(x + 32)
+    f === :f && return Ptr{var"##Ctag#264"}(x + 32)
     f === :center && return Ptr{Ptr{Cdouble}}(x + 40)
     f === :previous && return Ptr{Ptr{facetT}}(x + 48)
     f === :next && return Ptr{Ptr{facetT}}(x + 56)
@@ -90,36 +111,49 @@ function Base.getproperty(x::Ptr{facetT}, f::Symbol)
     f === :visitid && return Ptr{Cuint}(x + 104)
     f === :id && return Ptr{Cuint}(x + 108)
     f === :nummerge && return Ptr{Cuint}(x + 112)
-    f === :tricoplanar && return Ptr{Cuint}(x + 113)
-    f === :newfacet && return Ptr{Cuint}(x + 113)
-    f === :visible && return Ptr{Cuint}(x + 113)
-    f === :toporient && return Ptr{Cuint}(x + 113)
-    f === :simplicial && return Ptr{Cuint}(x + 113)
-    f === :seen && return Ptr{Cuint}(x + 113)
-    f === :seen2 && return Ptr{Cuint}(x + 113)
+    f === :tricoplanar && return (Ptr{Cuint}(x + 113), 1, 1)
+    f === :newfacet && return (Ptr{Cuint}(x + 113), 2, 1)
+    f === :visible && return (Ptr{Cuint}(x + 113), 3, 1)
+    f === :toporient && return (Ptr{Cuint}(x + 113), 4, 1)
+    f === :simplicial && return (Ptr{Cuint}(x + 113), 5, 1)
+    f === :seen && return (Ptr{Cuint}(x + 113), 6, 1)
+    f === :seen2 && return (Ptr{Cuint}(x + 113), 7, 1)
     f === :flipped && return Ptr{Cuint}(x + 114)
-    f === :upperdelaunay && return Ptr{Cuint}(x + 114)
-    f === :notfurthest && return Ptr{Cuint}(x + 114)
-    f === :good && return Ptr{Cuint}(x + 114)
-    f === :isarea && return Ptr{Cuint}(x + 114)
-    f === :dupridge && return Ptr{Cuint}(x + 114)
-    f === :mergeridge && return Ptr{Cuint}(x + 114)
-    f === :mergeridge2 && return Ptr{Cuint}(x + 114)
+    f === :upperdelaunay && return (Ptr{Cuint}(x + 114), 1, 1)
+    f === :notfurthest && return (Ptr{Cuint}(x + 114), 2, 1)
+    f === :good && return (Ptr{Cuint}(x + 114), 3, 1)
+    f === :isarea && return (Ptr{Cuint}(x + 114), 4, 1)
+    f === :dupridge && return (Ptr{Cuint}(x + 114), 5, 1)
+    f === :mergeridge && return (Ptr{Cuint}(x + 114), 6, 1)
+    f === :mergeridge2 && return (Ptr{Cuint}(x + 114), 7, 1)
     f === :coplanarhorizon && return Ptr{Cuint}(x + 115)
-    f === :mergehorizon && return Ptr{Cuint}(x + 115)
-    f === :cycledone && return Ptr{Cuint}(x + 115)
-    f === :tested && return Ptr{Cuint}(x + 115)
-    f === :keepcentrum && return Ptr{Cuint}(x + 115)
-    f === :newmerge && return Ptr{Cuint}(x + 115)
-    f === :degenerate && return Ptr{Cuint}(x + 115)
-    f === :redundant && return Ptr{Cuint}(x + 115)
+    f === :mergehorizon && return (Ptr{Cuint}(x + 115), 1, 1)
+    f === :cycledone && return (Ptr{Cuint}(x + 115), 2, 1)
+    f === :tested && return (Ptr{Cuint}(x + 115), 3, 1)
+    f === :keepcentrum && return (Ptr{Cuint}(x + 115), 4, 1)
+    f === :newmerge && return (Ptr{Cuint}(x + 115), 5, 1)
+    f === :degenerate && return (Ptr{Cuint}(x + 115), 6, 1)
+    f === :redundant && return (Ptr{Cuint}(x + 115), 7, 1)
     return getfield(x, f)
 end
 
 function Base.getproperty(x::facetT, f::Symbol)
     r = Ref{facetT}(x)
     ptr = Base.unsafe_convert(Ptr{facetT}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+    fptr = getproperty(ptr, f)
+    begin
+        if fptr isa Ptr
+            return GC.@preserve(r, unsafe_load(fptr))
+        else
+            (baseptr, offset, width) = fptr
+            ty = eltype(baseptr)
+            i8 = GC.@preserve(r, unsafe_load(baseptr))
+            bitstr = bitstring(i8)
+            sig = bitstr[(end - offset) - (width - 1):end - offset]
+            zexted = lpad(sig, 8 * sizeof(ty), '0')
+            return parse(ty, zexted; base = 2)
+        end
+    end
 end
 
 function Base.setproperty!(x::Ptr{facetT}, f::Symbol, v)
@@ -136,19 +170,32 @@ function Base.getproperty(x::Ptr{ridgeT}, f::Symbol)
     f === :bottom && return Ptr{Ptr{facetT}}(x + 16)
     f === :id && return Ptr{Cuint}(x + 24)
     f === :seen && return Ptr{Cuint}(x + 28)
-    f === :tested && return Ptr{Cuint}(x + 28)
-    f === :nonconvex && return Ptr{Cuint}(x + 28)
-    f === :mergevertex && return Ptr{Cuint}(x + 28)
-    f === :mergevertex2 && return Ptr{Cuint}(x + 28)
-    f === :simplicialtop && return Ptr{Cuint}(x + 28)
-    f === :simplicialbot && return Ptr{Cuint}(x + 28)
+    f === :tested && return (Ptr{Cuint}(x + 28), 1, 1)
+    f === :nonconvex && return (Ptr{Cuint}(x + 28), 2, 1)
+    f === :mergevertex && return (Ptr{Cuint}(x + 28), 3, 1)
+    f === :mergevertex2 && return (Ptr{Cuint}(x + 28), 4, 1)
+    f === :simplicialtop && return (Ptr{Cuint}(x + 28), 5, 1)
+    f === :simplicialbot && return (Ptr{Cuint}(x + 28), 6, 1)
     return getfield(x, f)
 end
 
 function Base.getproperty(x::ridgeT, f::Symbol)
     r = Ref{ridgeT}(x)
     ptr = Base.unsafe_convert(Ptr{ridgeT}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+    fptr = getproperty(ptr, f)
+    begin
+        if fptr isa Ptr
+            return GC.@preserve(r, unsafe_load(fptr))
+        else
+            (baseptr, offset, width) = fptr
+            ty = eltype(baseptr)
+            i8 = GC.@preserve(r, unsafe_load(baseptr))
+            bitstr = bitstring(i8)
+            sig = bitstr[(end - offset) - (width - 1):end - offset]
+            zexted = lpad(sig, 8 * sizeof(ty), '0')
+            return parse(ty, zexted; base = 2)
+        end
+    end
 end
 
 function Base.setproperty!(x::Ptr{ridgeT}, f::Symbol, v)
@@ -206,7 +253,8 @@ end
 function Base.getproperty(x::intrealT, f::Symbol)
     r = Ref{intrealT}(x)
     ptr = Base.unsafe_convert(Ptr{intrealT}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
 end
 
 function Base.setproperty!(x::Ptr{intrealT}, f::Symbol, v)
@@ -495,6 +543,280 @@ struct qhT
     cpp_user::Ptr{Cvoid}
     qhmem::qhmemT
     qhstat::qhstatT
+end
+
+function Base.getproperty(x::Ptr{qhT}, f::Symbol)
+    f === :ALLpoints && return Ptr{Cuint}(x + 0)
+    f === :ALLOWshort && return Ptr{Cuint}(x + 4)
+    f === :ALLOWwarning && return Ptr{Cuint}(x + 8)
+    f === :ALLOWwide && return Ptr{Cuint}(x + 12)
+    f === :ANGLEmerge && return Ptr{Cuint}(x + 16)
+    f === :APPROXhull && return Ptr{Cuint}(x + 20)
+    f === :MINoutside && return Ptr{Cdouble}(x + 24)
+    f === :ANNOTATEoutput && return Ptr{Cuint}(x + 32)
+    f === :ATinfinity && return Ptr{Cuint}(x + 36)
+    f === :AVOIDold && return Ptr{Cuint}(x + 40)
+    f === :BESToutside && return Ptr{Cuint}(x + 44)
+    f === :CDDinput && return Ptr{Cuint}(x + 48)
+    f === :CDDoutput && return Ptr{Cuint}(x + 52)
+    f === :CHECKduplicates && return Ptr{Cuint}(x + 56)
+    f === :CHECKfrequently && return Ptr{Cuint}(x + 60)
+    f === :premerge_cos && return Ptr{Cdouble}(x + 64)
+    f === :postmerge_cos && return Ptr{Cdouble}(x + 72)
+    f === :DELAUNAY && return Ptr{Cuint}(x + 80)
+    f === :DOintersections && return Ptr{Cuint}(x + 84)
+    f === :DROPdim && return Ptr{Cint}(x + 88)
+    f === :FLUSHprint && return Ptr{Cuint}(x + 92)
+    f === :FORCEoutput && return Ptr{Cuint}(x + 96)
+    f === :GOODpoint && return Ptr{Cint}(x + 100)
+    f === :GOODpointp && return Ptr{Ptr{Cdouble}}(x + 104)
+    f === :GOODthreshold && return Ptr{Cuint}(x + 112)
+    f === :GOODvertex && return Ptr{Cint}(x + 116)
+    f === :GOODvertexp && return Ptr{Ptr{Cdouble}}(x + 120)
+    f === :HALFspace && return Ptr{Cuint}(x + 128)
+    f === :ISqhullQh && return Ptr{Cuint}(x + 132)
+    f === :IStracing && return Ptr{Cint}(x + 136)
+    f === :KEEParea && return Ptr{Cint}(x + 140)
+    f === :KEEPcoplanar && return Ptr{Cuint}(x + 144)
+    f === :KEEPinside && return Ptr{Cuint}(x + 148)
+    f === :KEEPmerge && return Ptr{Cint}(x + 152)
+    f === :KEEPminArea && return Ptr{Cdouble}(x + 160)
+    f === :MAXcoplanar && return Ptr{Cdouble}(x + 168)
+    f === :MAXwide && return Ptr{Cint}(x + 176)
+    f === :MERGEexact && return Ptr{Cuint}(x + 180)
+    f === :MERGEindependent && return Ptr{Cuint}(x + 184)
+    f === :MERGING && return Ptr{Cuint}(x + 188)
+    f === :premerge_centrum && return Ptr{Cdouble}(x + 192)
+    f === :postmerge_centrum && return Ptr{Cdouble}(x + 200)
+    f === :MERGEpinched && return Ptr{Cuint}(x + 208)
+    f === :MERGEvertices && return Ptr{Cuint}(x + 212)
+    f === :MINvisible && return Ptr{Cdouble}(x + 216)
+    f === :NOnarrow && return Ptr{Cuint}(x + 224)
+    f === :NOnearinside && return Ptr{Cuint}(x + 228)
+    f === :NOpremerge && return Ptr{Cuint}(x + 232)
+    f === :ONLYgood && return Ptr{Cuint}(x + 236)
+    f === :ONLYmax && return Ptr{Cuint}(x + 240)
+    f === :PICKfurthest && return Ptr{Cuint}(x + 244)
+    f === :POSTmerge && return Ptr{Cuint}(x + 248)
+    f === :PREmerge && return Ptr{Cuint}(x + 252)
+    f === :PRINTcentrums && return Ptr{Cuint}(x + 256)
+    f === :PRINTcoplanar && return Ptr{Cuint}(x + 260)
+    f === :PRINTdim && return Ptr{Cint}(x + 264)
+    f === :PRINTdots && return Ptr{Cuint}(x + 268)
+    f === :PRINTgood && return Ptr{Cuint}(x + 272)
+    f === :PRINTinner && return Ptr{Cuint}(x + 276)
+    f === :PRINTneighbors && return Ptr{Cuint}(x + 280)
+    f === :PRINTnoplanes && return Ptr{Cuint}(x + 284)
+    f === :PRINToptions1st && return Ptr{Cuint}(x + 288)
+    f === :PRINTouter && return Ptr{Cuint}(x + 292)
+    f === :PRINTprecision && return Ptr{Cuint}(x + 296)
+    f === :PRINTout && return Ptr{NTuple{29, qh_PRINT}}(x + 300)
+    f === :PRINTridges && return Ptr{Cuint}(x + 416)
+    f === :PRINTspheres && return Ptr{Cuint}(x + 420)
+    f === :PRINTstatistics && return Ptr{Cuint}(x + 424)
+    f === :PRINTsummary && return Ptr{Cuint}(x + 428)
+    f === :PRINTtransparent && return Ptr{Cuint}(x + 432)
+    f === :PROJECTdelaunay && return Ptr{Cuint}(x + 436)
+    f === :PROJECTinput && return Ptr{Cint}(x + 440)
+    f === :RANDOMdist && return Ptr{Cuint}(x + 444)
+    f === :RANDOMfactor && return Ptr{Cdouble}(x + 448)
+    f === :RANDOMa && return Ptr{Cdouble}(x + 456)
+    f === :RANDOMb && return Ptr{Cdouble}(x + 464)
+    f === :RANDOMoutside && return Ptr{Cuint}(x + 472)
+    f === :REPORTfreq && return Ptr{Cint}(x + 476)
+    f === :REPORTfreq2 && return Ptr{Cint}(x + 480)
+    f === :RERUN && return Ptr{Cint}(x + 484)
+    f === :ROTATErandom && return Ptr{Cint}(x + 488)
+    f === :SCALEinput && return Ptr{Cuint}(x + 492)
+    f === :SCALElast && return Ptr{Cuint}(x + 496)
+    f === :SETroundoff && return Ptr{Cuint}(x + 500)
+    f === :SKIPcheckmax && return Ptr{Cuint}(x + 504)
+    f === :SKIPconvex && return Ptr{Cuint}(x + 508)
+    f === :SPLITthresholds && return Ptr{Cuint}(x + 512)
+    f === :STOPadd && return Ptr{Cint}(x + 516)
+    f === :STOPcone && return Ptr{Cint}(x + 520)
+    f === :STOPpoint && return Ptr{Cint}(x + 524)
+    f === :TESTpoints && return Ptr{Cint}(x + 528)
+    f === :TESTvneighbors && return Ptr{Cuint}(x + 532)
+    f === :TRACElevel && return Ptr{Cint}(x + 536)
+    f === :TRACElastrun && return Ptr{Cint}(x + 540)
+    f === :TRACEpoint && return Ptr{Cint}(x + 544)
+    f === :TRACEdist && return Ptr{Cdouble}(x + 552)
+    f === :TRACEmerge && return Ptr{Cint}(x + 560)
+    f === :TRIangulate && return Ptr{Cuint}(x + 564)
+    f === :TRInormals && return Ptr{Cuint}(x + 568)
+    f === :UPPERdelaunay && return Ptr{Cuint}(x + 572)
+    f === :USEstdout && return Ptr{Cuint}(x + 576)
+    f === :VERIFYoutput && return Ptr{Cuint}(x + 580)
+    f === :VIRTUALmemory && return Ptr{Cuint}(x + 584)
+    f === :VORONOI && return Ptr{Cuint}(x + 588)
+    f === :AREAfactor && return Ptr{Cdouble}(x + 592)
+    f === :DOcheckmax && return Ptr{Cuint}(x + 600)
+    f === :feasible_string && return Ptr{Cstring}(x + 608)
+    f === :feasible_point && return Ptr{Ptr{Cdouble}}(x + 616)
+    f === :GETarea && return Ptr{Cuint}(x + 624)
+    f === :KEEPnearinside && return Ptr{Cuint}(x + 628)
+    f === :hull_dim && return Ptr{Cint}(x + 632)
+    f === :input_dim && return Ptr{Cint}(x + 636)
+    f === :num_points && return Ptr{Cint}(x + 640)
+    f === :first_point && return Ptr{Ptr{Cdouble}}(x + 648)
+    f === :POINTSmalloc && return Ptr{Cuint}(x + 656)
+    f === :input_points && return Ptr{Ptr{Cdouble}}(x + 664)
+    f === :input_malloc && return Ptr{Cuint}(x + 672)
+    f === :qhull_command && return Ptr{NTuple{256, Cchar}}(x + 676)
+    f === :qhull_commandsiz2 && return Ptr{Cint}(x + 932)
+    f === :rbox_command && return Ptr{NTuple{256, Cchar}}(x + 936)
+    f === :qhull_options && return Ptr{NTuple{512, Cchar}}(x + 1192)
+    f === :qhull_optionlen && return Ptr{Cint}(x + 1704)
+    f === :qhull_optionsiz && return Ptr{Cint}(x + 1708)
+    f === :qhull_optionsiz2 && return Ptr{Cint}(x + 1712)
+    f === :run_id && return Ptr{Cint}(x + 1716)
+    f === :VERTEXneighbors && return Ptr{Cuint}(x + 1720)
+    f === :ZEROcentrum && return Ptr{Cuint}(x + 1724)
+    f === :upper_threshold && return Ptr{Ptr{Cdouble}}(x + 1728)
+    f === :lower_threshold && return Ptr{Ptr{Cdouble}}(x + 1736)
+    f === :upper_bound && return Ptr{Ptr{Cdouble}}(x + 1744)
+    f === :lower_bound && return Ptr{Ptr{Cdouble}}(x + 1752)
+    f === :ANGLEround && return Ptr{Cdouble}(x + 1760)
+    f === :centrum_radius && return Ptr{Cdouble}(x + 1768)
+    f === :cos_max && return Ptr{Cdouble}(x + 1776)
+    f === :DISTround && return Ptr{Cdouble}(x + 1784)
+    f === :MAXabs_coord && return Ptr{Cdouble}(x + 1792)
+    f === :MAXlastcoord && return Ptr{Cdouble}(x + 1800)
+    f === :MAXoutside && return Ptr{Cdouble}(x + 1808)
+    f === :MAXsumcoord && return Ptr{Cdouble}(x + 1816)
+    f === :MAXwidth && return Ptr{Cdouble}(x + 1824)
+    f === :MINdenom_1 && return Ptr{Cdouble}(x + 1832)
+    f === :MINdenom && return Ptr{Cdouble}(x + 1840)
+    f === :MINdenom_1_2 && return Ptr{Cdouble}(x + 1848)
+    f === :MINdenom_2 && return Ptr{Cdouble}(x + 1856)
+    f === :MINlastcoord && return Ptr{Cdouble}(x + 1864)
+    f === :NEARzero && return Ptr{Ptr{Cdouble}}(x + 1872)
+    f === :NEARinside && return Ptr{Cdouble}(x + 1880)
+    f === :ONEmerge && return Ptr{Cdouble}(x + 1888)
+    f === :outside_err && return Ptr{Cdouble}(x + 1896)
+    f === :WIDEfacet && return Ptr{Cdouble}(x + 1904)
+    f === :NARROWhull && return Ptr{Cuint}(x + 1912)
+    f === :qhull && return Ptr{NTuple{6, Cchar}}(x + 1916)
+    f === :errexit && return Ptr{jmp_buf}(x + 1924)
+    f === :jmpXtra && return Ptr{NTuple{40, Cchar}}(x + 2072)
+    f === :restartexit && return Ptr{jmp_buf}(x + 2112)
+    f === :jmpXtra2 && return Ptr{NTuple{40, Cchar}}(x + 2260)
+    f === :fin && return Ptr{Ptr{Libc.FILE}}(x + 2304)
+    f === :fout && return Ptr{Ptr{Libc.FILE}}(x + 2312)
+    f === :ferr && return Ptr{Ptr{Libc.FILE}}(x + 2320)
+    f === :interior_point && return Ptr{Ptr{Cdouble}}(x + 2328)
+    f === :normal_size && return Ptr{Cint}(x + 2336)
+    f === :center_size && return Ptr{Cint}(x + 2340)
+    f === :TEMPsize && return Ptr{Cint}(x + 2344)
+    f === :facet_list && return Ptr{Ptr{facetT}}(x + 2352)
+    f === :facet_tail && return Ptr{Ptr{facetT}}(x + 2360)
+    f === :facet_next && return Ptr{Ptr{facetT}}(x + 2368)
+    f === :newfacet_list && return Ptr{Ptr{facetT}}(x + 2376)
+    f === :visible_list && return Ptr{Ptr{facetT}}(x + 2384)
+    f === :num_visible && return Ptr{Cint}(x + 2392)
+    f === :tracefacet_id && return Ptr{Cuint}(x + 2396)
+    f === :tracefacet && return Ptr{Ptr{facetT}}(x + 2400)
+    f === :traceridge_id && return Ptr{Cuint}(x + 2408)
+    f === :traceridge && return Ptr{Ptr{ridgeT}}(x + 2416)
+    f === :tracevertex_id && return Ptr{Cuint}(x + 2424)
+    f === :tracevertex && return Ptr{Ptr{vertexT}}(x + 2432)
+    f === :vertex_list && return Ptr{Ptr{vertexT}}(x + 2440)
+    f === :vertex_tail && return Ptr{Ptr{vertexT}}(x + 2448)
+    f === :newvertex_list && return Ptr{Ptr{vertexT}}(x + 2456)
+    f === :num_facets && return Ptr{Cint}(x + 2464)
+    f === :num_vertices && return Ptr{Cint}(x + 2468)
+    f === :num_outside && return Ptr{Cint}(x + 2472)
+    f === :num_good && return Ptr{Cint}(x + 2476)
+    f === :facet_id && return Ptr{Cuint}(x + 2480)
+    f === :ridge_id && return Ptr{Cuint}(x + 2484)
+    f === :vertex_id && return Ptr{Cuint}(x + 2488)
+    f === :first_newfacet && return Ptr{Cuint}(x + 2492)
+    f === :hulltime && return Ptr{Culong}(x + 2496)
+    f === :ALLOWrestart && return Ptr{Cuint}(x + 2504)
+    f === :build_cnt && return Ptr{Cint}(x + 2508)
+    f === :CENTERtype && return Ptr{qh_CENTER}(x + 2512)
+    f === :furthest_id && return Ptr{Cint}(x + 2516)
+    f === :last_errcode && return Ptr{Cint}(x + 2520)
+    f === :GOODclosest && return Ptr{Ptr{facetT}}(x + 2528)
+    f === :coplanar_apex && return Ptr{Ptr{Cdouble}}(x + 2536)
+    f === :hasAreaVolume && return Ptr{Cuint}(x + 2544)
+    f === :hasTriangulation && return Ptr{Cuint}(x + 2548)
+    f === :isRenameVertex && return Ptr{Cuint}(x + 2552)
+    f === :JOGGLEmax && return Ptr{Cdouble}(x + 2560)
+    f === :maxoutdone && return Ptr{Cuint}(x + 2568)
+    f === :max_outside && return Ptr{Cdouble}(x + 2576)
+    f === :max_vertex && return Ptr{Cdouble}(x + 2584)
+    f === :min_vertex && return Ptr{Cdouble}(x + 2592)
+    f === :NEWfacets && return Ptr{Cuint}(x + 2600)
+    f === :NEWtentative && return Ptr{Cuint}(x + 2604)
+    f === :findbestnew && return Ptr{Cuint}(x + 2608)
+    f === :findbest_notsharp && return Ptr{Cuint}(x + 2612)
+    f === :NOerrexit && return Ptr{Cuint}(x + 2616)
+    f === :PRINTcradius && return Ptr{Cdouble}(x + 2624)
+    f === :PRINTradius && return Ptr{Cdouble}(x + 2632)
+    f === :POSTmerging && return Ptr{Cuint}(x + 2640)
+    f === :printoutvar && return Ptr{Cint}(x + 2644)
+    f === :printoutnum && return Ptr{Cint}(x + 2648)
+    f === :repart_facetid && return Ptr{Cuint}(x + 2652)
+    f === :retry_addpoint && return Ptr{Cint}(x + 2656)
+    f === :QHULLfinished && return Ptr{Cuint}(x + 2660)
+    f === :totarea && return Ptr{Cdouble}(x + 2664)
+    f === :totvol && return Ptr{Cdouble}(x + 2672)
+    f === :visit_id && return Ptr{Cuint}(x + 2680)
+    f === :vertex_visit && return Ptr{Cuint}(x + 2684)
+    f === :WAScoplanar && return Ptr{Cuint}(x + 2688)
+    f === :ZEROall_ok && return Ptr{Cuint}(x + 2692)
+    f === :facet_mergeset && return Ptr{Ptr{setT}}(x + 2696)
+    f === :degen_mergeset && return Ptr{Ptr{setT}}(x + 2704)
+    f === :vertex_mergeset && return Ptr{Ptr{setT}}(x + 2712)
+    f === :hash_table && return Ptr{Ptr{setT}}(x + 2720)
+    f === :other_points && return Ptr{Ptr{setT}}(x + 2728)
+    f === :del_vertices && return Ptr{Ptr{setT}}(x + 2736)
+    f === :gm_matrix && return Ptr{Ptr{Cdouble}}(x + 2744)
+    f === :gm_row && return Ptr{Ptr{Ptr{Cdouble}}}(x + 2752)
+    f === :line && return Ptr{Cstring}(x + 2760)
+    f === :maxline && return Ptr{Cint}(x + 2768)
+    f === :half_space && return Ptr{Ptr{Cdouble}}(x + 2776)
+    f === :temp_malloc && return Ptr{Ptr{Cdouble}}(x + 2784)
+    f === :ERREXITcalled && return Ptr{Cuint}(x + 2792)
+    f === :firstcentrum && return Ptr{Cuint}(x + 2796)
+    f === :old_randomdist && return Ptr{Cuint}(x + 2800)
+    f === :coplanarfacetset && return Ptr{Ptr{setT}}(x + 2808)
+    f === :last_low && return Ptr{Cdouble}(x + 2816)
+    f === :last_high && return Ptr{Cdouble}(x + 2824)
+    f === :last_newhigh && return Ptr{Cdouble}(x + 2832)
+    f === :lastcpu && return Ptr{Cdouble}(x + 2840)
+    f === :lastfacets && return Ptr{Cint}(x + 2848)
+    f === :lastmerges && return Ptr{Cint}(x + 2852)
+    f === :lastplanes && return Ptr{Cint}(x + 2856)
+    f === :lastdist && return Ptr{Cint}(x + 2860)
+    f === :lastreport && return Ptr{Cuint}(x + 2864)
+    f === :mergereport && return Ptr{Cint}(x + 2868)
+    f === :old_tempstack && return Ptr{Ptr{setT}}(x + 2872)
+    f === :ridgeoutnum && return Ptr{Cint}(x + 2880)
+    f === :last_random && return Ptr{Cint}(x + 2884)
+    f === :rbox_errexit && return Ptr{jmp_buf}(x + 2888)
+    f === :jmpXtra3 && return Ptr{NTuple{40, Cchar}}(x + 3036)
+    f === :rbox_isinteger && return Ptr{Cint}(x + 3076)
+    f === :rbox_out_offset && return Ptr{Cdouble}(x + 3080)
+    f === :cpp_object && return Ptr{Ptr{Cvoid}}(x + 3088)
+    f === :cpp_other && return Ptr{Ptr{Cvoid}}(x + 3096)
+    f === :cpp_user && return Ptr{Ptr{Cvoid}}(x + 3104)
+    f === :qhmem && return Ptr{qhmemT}(x + 3112)
+    f === :qhstat && return Ptr{qhstatT}(x + 3264)
+    return getfield(x, f)
+end
+
+function Base.getproperty(x::qhT, f::Symbol)
+    r = Ref{qhT}(x)
+    ptr = Base.unsafe_convert(Ptr{qhT}, r)
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
+end
+
+function Base.setproperty!(x::Ptr{qhT}, f::Symbol, v)
+    unsafe_store!(getproperty(x, f), v)
 end
 
 const ptr_intT = Clong
@@ -1059,18 +1381,31 @@ function Base.getproperty(x::Ptr{vertexT}, f::Symbol)
     f === :id && return Ptr{Cuint}(x + 32)
     f === :visitid && return Ptr{Cuint}(x + 36)
     f === :seen && return Ptr{Cuint}(x + 40)
-    f === :seen2 && return Ptr{Cuint}(x + 40)
-    f === :deleted && return Ptr{Cuint}(x + 40)
-    f === :delridge && return Ptr{Cuint}(x + 40)
-    f === :newfacet && return Ptr{Cuint}(x + 40)
-    f === :partitioned && return Ptr{Cuint}(x + 40)
+    f === :seen2 && return (Ptr{Cuint}(x + 40), 1, 1)
+    f === :deleted && return (Ptr{Cuint}(x + 40), 2, 1)
+    f === :delridge && return (Ptr{Cuint}(x + 40), 3, 1)
+    f === :newfacet && return (Ptr{Cuint}(x + 40), 4, 1)
+    f === :partitioned && return (Ptr{Cuint}(x + 40), 5, 1)
     return getfield(x, f)
 end
 
 function Base.getproperty(x::vertexT, f::Symbol)
     r = Ref{vertexT}(x)
     ptr = Base.unsafe_convert(Ptr{vertexT}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+    fptr = getproperty(ptr, f)
+    begin
+        if fptr isa Ptr
+            return GC.@preserve(r, unsafe_load(fptr))
+        else
+            (baseptr, offset, width) = fptr
+            ty = eltype(baseptr)
+            i8 = GC.@preserve(r, unsafe_load(baseptr))
+            bitstr = bitstring(i8)
+            sig = bitstr[(end - offset) - (width - 1):end - offset]
+            zexted = lpad(sig, 8 * sizeof(ty), '0')
+            return parse(ty, zexted; base = 2)
+        end
+    end
 end
 
 function Base.setproperty!(x::Ptr{vertexT}, f::Symbol, v)
@@ -1341,11 +1676,11 @@ function qh_errexit_rbox(qh, exitcode)
     ccall((:qh_errexit_rbox, libqhull_r), Cvoid, (Ptr{qhT}, Cint), qh, exitcode)
 end
 
-struct var"##Ctag#260"
+struct var"##Ctag#264"
     data::NTuple{8, UInt8}
 end
 
-function Base.getproperty(x::Ptr{var"##Ctag#260"}, f::Symbol)
+function Base.getproperty(x::Ptr{var"##Ctag#264"}, f::Symbol)
     f === :area && return Ptr{Cdouble}(x + 0)
     f === :replace && return Ptr{Ptr{facetT}}(x + 0)
     f === :samecycle && return Ptr{Ptr{facetT}}(x + 0)
@@ -1355,15 +1690,282 @@ function Base.getproperty(x::Ptr{var"##Ctag#260"}, f::Symbol)
     return getfield(x, f)
 end
 
-function Base.getproperty(x::var"##Ctag#260", f::Symbol)
-    r = Ref{var"##Ctag#260"}(x)
-    ptr = Base.unsafe_convert(Ptr{var"##Ctag#260"}, r)
-    GC.@preserve r unsafe_load(getproperty(ptr, f))
+function Base.getproperty(x::var"##Ctag#264", f::Symbol)
+    r = Ref{var"##Ctag#264"}(x)
+    ptr = Base.unsafe_convert(Ptr{var"##Ctag#264"}, r)
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
 end
 
-function Base.setproperty!(x::Ptr{var"##Ctag#260"}, f::Symbol, v)
+function Base.setproperty!(x::Ptr{var"##Ctag#264"}, f::Symbol, v)
     unsafe_store!(getproperty(x, f), v)
 end
+
+const qhDEFlibqhull = 1
+
+const CLOCKS_PER_SEC = 1000000
+
+const qhDEFuser = 1
+
+const qh_FILENAMElen = 500
+
+const MSG_TRACE0 = 0
+
+const MSG_TRACE1 = 1000
+
+const MSG_TRACE2 = 2000
+
+const MSG_TRACE3 = 3000
+
+const MSG_TRACE4 = 4000
+
+const MSG_TRACE5 = 5000
+
+const MSG_ERROR = 6000
+
+const MSG_WARNING = 7000
+
+const MSG_STDERR = 8000
+
+const MSG_OUTPUT = 9000
+
+const MSG_QHULL_ERROR = 10000
+
+const MSG_FIX = 11000
+
+const MSG_MAXLEN = 3000
+
+const qh_OPTIONline = 80
+
+const REALfloat = 0
+
+const realT = Float64
+
+const REALmax = DBL_MAX
+
+const REALmin = DBL_MIN
+
+const REALepsilon = DBL_EPSILON
+
+const qh_REALdigits = 16
+
+const qh_REAL_1 = "%6.16g "
+
+const qh_REAL_2n = "%6.16g %6.16g\n"
+
+const qh_REAL_3n = "%6.16g %6.16g %6.16g\n"
+
+const DEFcountT = 1
+
+const COUNTmax = INT_MAX
+
+# Skipping MacroDefinition: qh_POINTSmax ( INT_MAX - 16 )
+
+const qh_CLOCKtype = 1
+
+# Skipping MacroDefinition: qh_CPUclock ( ( unsigned long ) clock ( ) )
+
+const qh_SECticks = CLOCKS_PER_SEC
+
+const qh_RANDOMtype = 5
+
+# Skipping MacroDefinition: qh_RANDOMmax ( ( realT ) 2147483646UL )
+
+# Skipping MacroDefinition: qh_RANDOMint qh_rand ( qh )
+
+const qh_ORIENTclock = 0
+
+const qh_JOGGLEdefault = 30000.0
+
+const qh_JOGGLEincrease = 10.0
+
+const qh_JOGGLEretry = 2
+
+const qh_JOGGLEagain = 1
+
+const qh_JOGGLEmaxincrease = 0.01
+
+const qh_JOGGLEmaxretry = 50
+
+const qh_HASHfactor = 2
+
+const qh_VERIFYdirect = 1000000
+
+const qh_INITIALsearch = 6
+
+const qh_INITIALmax = 8
+
+# Skipping MacroDefinition: qh_MEMalign ( ( int ) ( fmax_ ( sizeof ( realT ) , sizeof ( void * ) ) ) )
+
+const qh_MEMbufsize = 0x00010000
+
+const qh_MEMinitbuf = 0x00020000
+
+# Skipping MacroDefinition: qh_INFINITE - 10.101
+
+const qh_DEFAULTbox = 0.5
+
+const qh_DEFAULTzbox = 1.0e6
+
+const qh_COMPUTEfurthest = 0
+
+const qh_KEEPstatistics = 1
+
+const qh_MAXoutside = 1
+
+const qh_QUICKhelp = 0
+
+const qh_BESTcentrum = 20
+
+const qh_BESTcentrum2 = 2
+
+const qh_BESTnonconvex = 15
+
+const qh_COPLANARratio = 3
+
+const qh_DIMmergeVertex = 6
+
+const qh_DIMreduceBuild = 5
+
+# Skipping MacroDefinition: qh_DISToutside ( ( qh_USEfindbestnew ? 2 : 1 ) * fmax_ ( ( qh -> MERGING ? 2 : 1 ) * qh -> MINoutside , qh -> max_outside ) )
+
+const qh_MAXcheckpoint = 10
+
+const qh_MAXcoplanarcentrum = 10
+
+const qh_MAXnewcentrum = 5
+
+const qh_MAXnewmerges = 2
+
+const qh_RATIOconcavehorizon = 20.0
+
+const qh_RATIOconvexmerge = 10.0
+
+const qh_RATIOcoplanarapex = 3.0
+
+const qh_RATIOcoplanaroutside = 30.0
+
+const qh_RATIOmaxsimplex = 0.001
+
+const qh_RATIOnearinside = 5
+
+const qh_RATIOpinchedsubridge = 10.0
+
+const qh_RATIOtrypinched = 4.0
+
+const qh_RATIOtwisted = 20.0
+
+# Skipping MacroDefinition: qh_SEARCHdist ( ( qh_USEfindbestnew ? 2 : 1 ) * ( qh -> max_outside + 2 * qh -> DISTround + fmax_ ( qh -> MINvisible , qh -> MAXcoplanar ) ) ) ;
+
+# Skipping MacroDefinition: qh_USEfindbestnew ( zzval_ ( Ztotmerge ) > 50 )
+
+# Skipping MacroDefinition: qh_MAXnarrow - 0.99999999
+
+# Skipping MacroDefinition: qh_WARNnarrow - 0.999999999999999
+
+const qh_WIDEcoplanar = 6
+
+const qh_WIDEduplicate = 100
+
+const qh_WIDEdupridge = 50
+
+const qh_WIDEmaxoutside = 100
+
+# Skipping MacroDefinition: qh_WIDEmaxoutside2 ( 10 * qh_WIDEmaxoutside )
+
+const qh_WIDEpinched = 100
+
+const qh_ZEROdelaunay = 2
+
+const qhDEFmem = 1
+
+const DEFsetT = 1
+
+const DEFqhT = 1
+
+const qh_TRACEshort = nothing
+
+const qhmem_ERRmem = 4
+
+const qhmem_ERRqhull = 5
+
+const qhDEFset = 1
+
+# Skipping MacroDefinition: SETelemsize ( ( int ) sizeof ( setelemT ) )
+
+const coordT = realT
+
+const pointT = coordT
+
+const flagT = Cuint
+
+const boolT = Cuint
+
+const False = 0
+
+const True = 1
+
+const qh_False = 0
+
+const qh_True = 1
+
+const qhDEFstat = 1
+
+const DEFqhstatT = 1
+
+const MAYdebugx = nothing
+
+const qh_ALL = True
+
+const qh_NOupper = True
+
+const qh_IScheckmax = True
+
+const qh_ISnewfacets = True
+
+const qh_RESETvisible = True
+
+const qh_ERRnone = 0
+
+const qh_ERRinput = 1
+
+const qh_ERRsingular = 2
+
+const qh_ERRprec = 3
+
+const qh_ERRmem = 4
+
+const qh_ERRqhull = 5
+
+const qh_ERRother = 6
+
+const qh_ERRtopology = 7
+
+const qh_ERRwide = 8
+
+const qh_ERRdebug = 9
+
+# Skipping MacroDefinition: qh_FILEstderr ( ( FILE * ) 1 )
+
+const qh_MAXnummerge = 511
+
+const QHULL_NON_REENTRANT = 0
+
+const QHULL_QH_POINTER = 1
+
+const QHULL_REENTRANT = 2
+
+const QHULL_LIB_TYPE = QHULL_REENTRANT
+
+# Skipping MacroDefinition: QHULL_LIB_CHECK qh_lib_check ( QHULL_LIB_TYPE , sizeof ( qhT ) , sizeof ( vertexT ) , sizeof ( ridgeT ) , sizeof ( facetT ) , sizeof ( setT ) , sizeof ( qhmemT ) ) ;
+
+# Skipping MacroDefinition: QHULL_LIB_CHECK_RBOX qh_lib_check ( QHULL_LIB_TYPE , sizeof ( qhT ) , sizeof ( vertexT ) , sizeof ( ridgeT ) , sizeof ( facetT ) , 0 , 0 ) ;
+
+# Skipping MacroDefinition: FORALLfacets for ( facet = qh -> facet_list ; facet && facet -> next ; facet = facet -> next )
+
+# Skipping MacroDefinition: FORALLpoints FORALLpoint_ ( qh , qh -> first_point , qh -> num_points )
+
+# Skipping MacroDefinition: FORALLvertices for ( vertex = qh -> vertex_list ; vertex && vertex -> next ; vertex = vertex -> next )
 
 # exports
 const PREFIXES = ["qh_", "qhT"]

@@ -7,7 +7,7 @@ if MiniQhull.QHULL_WRAPPER_LOADED[]
         @test delaunay(2,4,[0,0,0,1,1,0,1,1]) == delaunay([0 0 1 1; 0 1 0 1])
     end
 
-    @testset "Custom array-type" begin 
+    @testset "Custom array-type" begin
         pts = [[0.,0.], [0.,1.], [1.,0.], [1.,1.]]
         dim = 2
         x = reinterpret(Float64, [SVector{dim, Float64}(pt) for pt in pts])
@@ -17,15 +17,15 @@ if MiniQhull.QHULL_WRAPPER_LOADED[]
     @testset "Vector of vectors" begin
         pts = [[0.,0.], [0.,1.], [1.,0.], [1.,1.]]
 
-        @testset "Vector of regular vectors" begin 
+        @testset "Vector of regular vectors" begin
             @test delaunay(pts) == [4 4; 2 3; 1 1]
         end
 
-        @testset "Vector of tuples" begin 
+        @testset "Vector of tuples" begin
             tups = [(0.,0.,), (0.,1.,), (1.,0.,), (1.,1., )]
             @test delaunay(tups) == [4 4; 2 3; 1 1]
         end
-      
+
         @testset "Vector of SVectors" begin
             @test delaunay([SVector{2, Float64}(pt) for pt in pts]) == [4 4; 2 3; 1 1]
         end

@@ -1,2 +1,5 @@
-const boolT = Cuint
-export boolT
+const DBL_MAX = floatmax()
+const DBL_MIN = floatmin()
+const DBL_EPSILON = eps()
+const INT_MAX = typemax(Cint)
+const INT_MIN = typemin(Cint)

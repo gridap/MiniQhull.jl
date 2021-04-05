@@ -55,6 +55,7 @@ skip_compiler_definition = true
 # definitions in the following list will never be skipped
 definition_whitelist = [
     "jmp_buf",
+    "CLOCKS_PER_SEC",
 ]
 
 # run `DeAnonymize` pass if this option is set to true.
@@ -78,13 +79,16 @@ opaque_func_arg_as_PtrCvoid = false
 opaque_as_mutable_struct = true
 
 # generate getproperty/setproperty! methods for the types in the following list
-field_access_method_list = []
+field_access_method_list = [
+    "qhT",
+    "setT",
+]
 
 [codegen.macro]
 # it highly recommended to set this entry to "basic".
 # if you'd like to skip all of the macros, please set this entry to "disable".
 # if you'd like to aggressive translate macros to Julia, please set this entry to "aggressive".
-macro_mode = "none"
+macro_mode = "basic"
 
 # if this entry is true, the generator prints the following message as comments.
 # "# Skipping MacroDefinition: ..."
