@@ -121,7 +121,7 @@ $ sudo apt-get install libqhull-r7 libqhull-dev
 If you need to install a C compiler, it can be also obtained by means of `apt` tool:
 ```
 $ sudo apt-get update
-$ sudo apt-get gcc
+$ sudo apt-get install gcc build-essential
 ```
 
 ## Continuous integration
