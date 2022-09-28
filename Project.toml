@@ -7,7 +7,7 @@ version = "0.3.1"
 QhullMiniWrapper_jll = "460c41e3-6112-5d7f-b78c-b6823adb3f2d"
 
 [compat]
-julia = "1.3"
+julia = "1.6"
 QhullMiniWrapper_jll = "1"
 
 [extras]

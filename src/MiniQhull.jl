@@ -12,7 +12,7 @@ function _delaunay(dim::Int32, numpoints::Int32, points, flags::Union{Nothing,Ab
     qh == C_NULL && error("Qhull handler is null")
     cflags = flags===nothing ? C_NULL : flags
     ierror = delaunay_init_and_compute(qh, dim, numpoints, points, numcells, cflags)
-    ierror != 0 && error("Failure on delaunay_init_and_compute function")
+    ierror != 0 && error("Failure on delaunay_init_and_compute function: $(ierror)")
     cells = Matrix{Int32}(undef,dim+1,numcells[])
     ierror = delaunay_fill_cells(qh, dim, numcells[], cells)
     ierror != 0 && error("Failure on delaunay_fill_cells function")
