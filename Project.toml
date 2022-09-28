@@ -4,7 +4,7 @@ authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@ci
 version = "0.3.0"
 
 [deps]
-QhullMini_jll = "0d2bb0ae-7f19-52c3-b7ac-00785fe1ed84"
+QhullMiniWrapper_jll = "0d2bb0ae-7f19-52c3-b7ac-00785fe1ed84"
 
 [compat]
 julia = "1"
