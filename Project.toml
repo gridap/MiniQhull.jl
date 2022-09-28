@@ -4,10 +4,11 @@ authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@ci
 version = "0.3.1"
 
 [deps]
-QhullMiniWrapper_jll = "0d2bb0ae-7f19-52c3-b7ac-00785fe1ed84"
+QhullMiniWrapper_jll = "460c41e3-6112-5d7f-b78c-b6823adb3f2d"
 
 [compat]
 julia = "1.3"
+QhullMiniWrapper_jll = "1"
 
 [extras]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
