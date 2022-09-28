@@ -4,18 +4,14 @@ authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@ci
 version = "0.3.0"
 
 [deps]
-CMake = "631607c0-34d2-5d66-819e-eb0f9aa2061a"
-Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
-Qhull_jll = "784f63db-0788-585a-bace-daefebcd302b"
+QhullMini_jll = "0d2bb0ae-7f19-52c3-b7ac-00785fe1ed84"
 
 [compat]
-CMake = "1.2.0"
-Qhull_jll = "v2019.1.0, v2020.2.0"
 julia = "1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "StaticArrays"]
