@@ -1,6 +1,6 @@
 module MiniQhull
 
-using QhullMini_jll
+using QhullMiniWrapper_jll
 
 export delaunay
 
