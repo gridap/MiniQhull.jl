@@ -1,7 +1,7 @@
 name = "MiniQhull"
 uuid = "978d7f02-9e05-4691-894f-ae31a51d76ca"
 authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Victor Sande <vsande@cimne.upc.edu>"]
-version = "0.3.1"
+version = "0.4.0"
 
 [deps]
 QhullMiniWrapper_jll = "460c41e3-6112-5d7f-b78c-b6823adb3f2d"
